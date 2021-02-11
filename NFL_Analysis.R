@@ -1,5 +1,7 @@
 library(tidyverse)
 
+setwd("~/Desktop/Applied Predictive Analytics")
+
 NFL <- read.csv("Data/NFL Play by Play 2009-2016 (v3).csv", fileEncoding = "UTF-8-BOM")
 
 NFL2009 <- filter(NFL, Season == 2009)
