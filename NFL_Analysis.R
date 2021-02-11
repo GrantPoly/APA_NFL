@@ -43,7 +43,19 @@ NFL2009 <- mutate(NFL2009,
                     AwayTeamScore = ifelse(posteam == AwayTeam, PosTeamScore + Touchdown*6 + ifelse(FieldGoalResult == "Good",3,0), DefTeamScore)
 )
 
-NFL2009 <- mutate(NFL2009, HomeWin = ifelse(HomeTeamScore > AwayTeamScore,1,0))   
+typeof(NFL2009$HomeTeamScore)
+
+NFL2009$HomeTeamScore <- as.integer(NFL2009$HomeTeamScore)
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(FinalHomeScore = max(HomeTeamScore, na.rm = T))
+
+typeof(NFL2009$AwayTeamScore)
+
+NFL2009$AwayTeamScore <- as.integer(NFL2009$AwayTeamScore)
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(FinalAwayScore = max(AwayTeamScore, na.rm = T)) 
+                         
+NFL2009 <- mutate(NFL2009, HomeWin = ifelse(FinalHomeScore > FinalAwayScore, 1, 0))                        
                          
                          
                          
