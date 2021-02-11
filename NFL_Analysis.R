@@ -31,3 +31,19 @@ FirstGame <- mutate(FirstGame,
                     HomeTeamScore = ifelse(posteam == HomeTeam, PosTeamScore + Touchdown*6 + ifelse(FieldGoalResult == "Good",3,0), DefTeamScore),
                     AwayTeamScore = ifelse(posteam == AwayTeam, PosTeamScore + Touchdown*6 + ifelse(FieldGoalResult == "Good",3,0), DefTeamScore)
                     )
+
+NFL2009 <- data.frame(lapply(NFL2009, as.character), stringsAsFactors=FALSE)                         
+                         
+NFL2009$Touchdown <- as.integer(NFL2009$Touchdown)
+NFL2009$sp <- as.integer(NFL2009$sp)
+NFL2009$PosTeamScore <- as.integer(NFL2009$PosTeamScore)
+
+NFL2009 <- mutate(NFL2009, 
+                    HomeTeamScore = ifelse(posteam == HomeTeam, PosTeamScore + Touchdown*6 + ifelse(FieldGoalResult == "Good",3,0), DefTeamScore),
+                    AwayTeamScore = ifelse(posteam == AwayTeam, PosTeamScore + Touchdown*6 + ifelse(FieldGoalResult == "Good",3,0), DefTeamScore)
+)
+
+NFL2009 <- mutate(NFL2009, HomeWin = ifelse(HomeTeamScore > AwayTeamScore,1,0))   
+                         
+                         
+                         
