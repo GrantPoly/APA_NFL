@@ -93,3 +93,20 @@ NFL2009 <- mutate(NFL2009, Overtime = ifelse(qtr == 5, 1,0))
                          
                          
                          
+NFL2009$PassAttempt <- as.integer(NFL2009$PassAttempt)
+
+NFL2009 <- mutate(NFL2009, HomePassCount = ifelse(posteam == HomeTeam & PassOutcome == "Complete", 1,0))
+
+NFL2009 <- mutate(NFL2009, AwayPassCount = ifelse(posteam == AwayTeam & PassOutcome == "Complete", 1,0))
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(HomePasses = sum(HomePassCount, na.rm = T))
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(AwayPasses = sum(AwayPassCount, na.rm=T))
+
+NFL2009 <- mutate(NFL2009, HomePassAttemptCount = ifelse(posteam == HomeTeam & PassAttempt == 1, 1,0))
+
+NFL2009 <- mutate(NFL2009, AwayPassAttemptCount = ifelse(posteam == AwayTeam & PassAttempt == 1, 1,0))
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(HomePassAttempts = sum(HomePassAttemptCount, na.rm = T))
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(AwayPassAttempts = sum(AwayPassAttemptCount, na.rm=T))
