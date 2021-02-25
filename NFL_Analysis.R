@@ -87,5 +87,9 @@ NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(AwayRush = sum(AwayRushYards
 
 NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(HomeYards = HomeRush+HomePass)
 
-NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(AwayYards = AwayRush+AwayPass)                         
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(AwayYards = AwayRush+AwayPass)
+                         
+NFL2009 <- mutate(NFL2009, Overtime = ifelse(qtr == 5, 1,0))
+                         
+                         
                          
