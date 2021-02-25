@@ -14,20 +14,38 @@ missing_values <- sapply(NFL, function(x) sum(is.na(x)))
 
 missing_values
 
-count(NFL2009)/count(NFL)
+NFL <- data.frame(lapply(NFL, as.character), stringsAsFactors=FALSE)
 
-FirstGame <- filter(NFL2009, GameID == 2009091000)
+typeof(NFL$sp)
+typeof(NFL$PosTeamScore)
 
-FirstGame <- data.frame(lapply(FirstGame, as.character), stringsAsFactors=FALSE)
+NFL$Touchdown <- as.integer(NFL$Touchdown)
+NFL$sp <- as.integer(NFL$sp)
+NFL$PosTeamScore <- as.integer(NFL$PosTeamScore)
 
-typeof(FirstGame$sp)
-typeof(FirstGame$PosTeamScore)
+NFL <- mutate(NFL, 
+                  HomeTeamScore = ifelse(posteam == HomeTeam, PosTeamScore + Touchdown*6 + ifelse(FieldGoalResult == "Good",3,0), DefTeamScore),
+                  AwayTeamScore = ifelse(posteam == AwayTeam, PosTeamScore + Touchdown*6 + ifelse(FieldGoalResult == "Good",3,0), DefTeamScore)
+)
 
-FirstGame$Touchdown <- as.integer(FirstGame$Touchdown)
-FirstGame$sp <- as.integer(FirstGame$sp)
-FirstGame$PosTeamScore <- as.integer(FirstGame$PosTeamScore)
+typeof(NFL$HomeTeamScore)
 
-FirstGame <- mutate(FirstGame, 
-                    HomeTeamScore = ifelse(posteam == HomeTeam, PosTeamScore + Touchdown*6 + ifelse(FieldGoalResult == "Good",3,0), DefTeamScore),
-                    AwayTeamScore = ifelse(posteam == AwayTeam, PosTeamScore + Touchdown*6 + ifelse(FieldGoalResult == "Good",3,0), DefTeamScore)
-                    )
+NFL$HomeTeamScore <- as.integer(NFL$HomeTeamScore)
+
+NFL <- NFL %>% group_by(GameID)  %>% mutate(FinalHomeScore = max(HomeTeamScore, na.rm = T))
+
+typeof(NFL$AwayTeamScore)
+
+NFL$AwayTeamScore <- as.integer(NFL$AwayTeamScore)
+
+NFL <- NFL %>% group_by(GameID)  %>% mutate(FinalAwayScore = max(AwayTeamScore, na.rm = T))
+
+NFL <- mutate(NFL, HomeWin = ifelse(FinalHomeScore > FinalAwayScore, 1, 0))
+
+typeof(NFL$HomeWin)
+
+summary(NFL)
+
+
+count(NFL$HomeWin)
+
