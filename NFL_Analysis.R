@@ -57,5 +57,35 @@ NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(FinalAwayScore = max(AwayTea
                          
 NFL2009 <- mutate(NFL2009, HomeWin = ifelse(FinalHomeScore > FinalAwayScore, 1, 0))                        
                          
-                         
+typeof(NFL2009$AirYards)
+
+NFL2009$AirYards <- as.integer(NFL2009$AirYards)
+
+typeof(NFL2009$YardsAfterCatch)
+
+NFL2009$YardsAfterCatch <- as.integer(NFL2009$YardsAfterCatch)
+
+NFL2009 <- mutate(NFL2009, HomePassYards = ifelse(posteam == HomeTeam & PassOutcome == "Complete", AirYards + YardsAfterCatch,0))
+
+NFL2009 <- mutate(NFL2009, AwayPassYards = ifelse(posteam == AwayTeam & PassOutcome == "Complete", AirYards + YardsAfterCatch,0))
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(HomePass = sum(HomePassYards, na.rm = T))
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(AwayPass = sum(AwayPassYards, na.rm=T))
+
+NFL2009 <- mutate(NFL2009, HomeRushYards = ifelse(posteam == HomeTeam & RushAttempt == 1, Yards.Gained,0))
+
+NFL2009 <- mutate(NFL2009, AwayRushYards = ifelse(posteam == AwayTeam & RushAttempt == 1, Yards.Gained,0))
+
+NFL2009$HomeRushYards <- as.integer(NFL2009$HomeRushYards)
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(HomeRush = sum(HomeRushYards, na.rm = T))
+
+NFL2009$AwayRushYards <- as.integer(NFL2009$AwayRushYards)
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(AwayRush = sum(AwayRushYards, na.rm=T))
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(HomeYards = HomeRush+HomePass)
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(AwayYards = AwayRush+AwayPass)                         
                          
