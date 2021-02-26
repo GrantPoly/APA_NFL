@@ -110,3 +110,45 @@ NFL2009 <- mutate(NFL2009, AwayPassAttemptCount = ifelse(posteam == AwayTeam & P
 NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(HomePassAttempts = sum(HomePassAttemptCount, na.rm = T))
 
 NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(AwayPassAttempts = sum(AwayPassAttemptCount, na.rm=T))
+
+#Add Play Counts
+
+NFL2009 <- mutate(NFL2009, HomePlayCount = ifelse(posteam == HomeTeam & PlayAttempted == 1, 1,0))
+
+NFL2009 <- mutate(NFL2009, AwayPlayCount = ifelse(posteam == AwayTeam & PlayAttempted == 1, 1,0))
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(HomePlays = sum(HomePlayCount, na.rm = T))
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(AwayPlays = sum(AwayPlayCount, na.rm=T))
+
+#Add First Downs
+
+NFL2009 <- mutate(NFL2009, HomeFirstDownCount = ifelse(posteam == HomeTeam & FirstDown == 1, 1,0))
+
+NFL2009 <- mutate(NFL2009, AwayFirstDownCount = ifelse(posteam == AwayTeam & FirstDown == 1, 1,0))
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(HomeFirstDowns = sum(HomeFirstDownCount, na.rm = T))
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(AwayFirstDowns = sum(AwayFirstDownCount, na.rm=T))
+
+#Add Drive Counts
+
+NFL2009 <- mutate(NFL2009, HomeDrivesCount = ifelse(posteam == HomeTeam, Drive,0))
+
+NFL2009 <- mutate(NFL2009, AwayDrivesCount = ifelse(posteam == AwayTeam, Drive,0))
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(HomeDrives = length(unique(HomeDrivesCount)) - 1)
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(AwayDrives = length(unique(AwayDrivesCount)) - 1)
+
+#Test Code
+getmode <- function(v) {
+  uniqv <- unique(v)
+  uniqv[which.max(tabulate(match(v, uniqv)))]
+}
+
+
+Passing <- group_by(NFL2009, GameID) %>% 
+  summarise(HomeAttempts = max(HomePassAttempts), AwayAttempts = max(AwayPassAttempts), HomePassTotal = 
+              max(HomePasses), AwayPassTotal = max(AwayPasses), Home = getmode(HomeTeam), Away = getmode(AwayTeam),
+              HomeFirsts = max(HomeFirstDowns), AwayFirsts = max(AwayFirstDowns), GameDate = getmode(Date))                         
