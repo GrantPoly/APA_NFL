@@ -140,6 +140,14 @@ NFL2009 <- mutate(NFL2009, AwayDrivesCount = ifelse(posteam == AwayTeam, Drive,0
 NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(HomeDrives = length(unique(HomeDrivesCount)) - 1)
 
 NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(AwayDrives = length(unique(AwayDrivesCount)) - 1)
+                         
+NFL2009 <- mutate(NFL2009, HomeRushAttemptCount = ifelse(posteam == HomeTeam & RushAttempt == 1, 1,0))
+
+NFL2009 <- mutate(NFL2009, AwayRushAttemptCount = ifelse(posteam == AwayTeam & RushAttempt == 1, 1,0))
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(HomeRushAttempts = sum(HomeRushAttemptCount, na.rm = T))
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(AwayRushAttempts = sum(AwayRushAttemptCount, na.rm=T))                         
 
 #Test Code
 getmode <- function(v) {
@@ -152,3 +160,23 @@ Passing <- group_by(NFL2009, GameID) %>%
   summarise(HomeAttempts = max(HomePassAttempts), AwayAttempts = max(AwayPassAttempts), HomePassTotal = 
               max(HomePasses), AwayPassTotal = max(AwayPasses), Home = getmode(HomeTeam), Away = getmode(AwayTeam),
               HomeFirsts = max(HomeFirstDowns), AwayFirsts = max(AwayFirstDowns), GameDate = getmode(Date))                         
+
+NFL_Game <- group_by(NFL2009, GameID) %>% 
+  summarise( GameDate = getmode(Date), Home = getmode(HomeTeam), Away = getmode(AwayTeam), HomePlays = max(HomePlays), 
+             AwayPlays = max(AwayPlays), HomeFirsts = max(HomeFirstDowns), AwayFirsts = max(AwayFirstDowns),
+             Overtime = max(Overtime), HomeDrives = max(HomeDrives), AwayDrives = max(AwayDrives), 
+             HomeScore = max(FinalHomeScore), AwayScore = max(FinalAwayScore), HomeWin = max(HomeWin),
+             HomePass = max(HomePass), AwayPass = max(AwayPass),  HomePassTotal = max(HomePasses), 
+             AwayPassTotal = max(AwayPasses),HomePassAttempts = max(HomePassAttempts), AwayPassAttempts = max(AwayPassAttempts),
+             HomeRush = max(HomeRush), AwayRush = max(AwayRush), HomeRushAttempts = max(HomeRushAttempts),
+             AwayRushAttempts = max(AwayRushAttempts), HomeYards = max(HomeYards), AwayYards = max(AwayYards)
+            )       
+
+NFL_Game <- mutate(NFL_Game, HomePassPercent = (HomePassTotal/HomePassAttempts)*100, AwayPassPercent 
+                   = (AwayPassTotal/AwayPassAttempts)*100, HomeYardsPerPass = HomePass/HomePassAttempts, 
+                   AwayYardsPerPass = AwayPass/AwayPassAttempts, HomeYardsPerRush = HomeRush/HomeRushAttempts,
+                   AwayYardsPerRush = AwayRush/AwayRushAttempts, YardsPlayHome = HomeYards/HomePlays, 
+                   YardsPlayAway = AwayYards/AwayPlays)                         
+                         
+                         
+                         
