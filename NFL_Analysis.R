@@ -164,9 +164,9 @@ NFL2009 <- mutate(NFL2009, HomePossessionTime = ifelse(posteam == HomeTeam, Play
 
 NFL2009 <- mutate(NFL2009, AwayPossessionTime = ifelse(posteam == AwayTeam, PlayTimeDiff,0))
 
-NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(HomePossession = sum(HomePossessionTime))
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(HomePossession = sum(HomePossessionTime, na.rm = T))
 
-NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(AwayPossession = sum(AwayPossessionTime))                         
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(AwayPossession = sum(AwayPossessionTime, na.rm = T))                         
 
 #Test Code
 getmode <- function(v) {
@@ -189,7 +189,8 @@ NFL_Game <- group_by(NFL2009, GameID) %>%
              HomePass = max(HomePass), AwayPass = max(AwayPass),  HomePassTotal = max(HomePasses), 
              AwayPassTotal = max(AwayPasses),HomePassAttempts = max(HomePassAttempts), AwayPassAttempts = max(AwayPassAttempts),
              HomeRush = max(HomeRush), AwayRush = max(AwayRush), HomeRushAttempts = max(HomeRushAttempts),
-             AwayRushAttempts = max(AwayRushAttempts), HomeYards = max(HomeYards), AwayYards = max(AwayYards)
+             AwayRushAttempts = max(AwayRushAttempts), HomeYards = max(HomeYards), AwayYards = max(AwayYards),
+             HomePossession = (max(HomePossession)/60), AwayPossession = (max(AwayPossession)/60)
             )       
 
 NFL_Game <- mutate(NFL_Game, HomePassPercent = (HomePassTotal/HomePassAttempts)*100, AwayPassPercent 
