@@ -43,6 +43,12 @@ NFL2009 <- mutate(NFL2009,
                     AwayTeamScore = ifelse(posteam == AwayTeam, PosTeamScore + Touchdown*6 + ifelse(FieldGoalResult == "Good",3,0), DefTeamScore)
 )
 
+#Fix Team Issues
+
+NFL2009[NFL2009==""]<-NA
+
+NFL2009 <- fill(data = NFL2009, posteam)                         
+                         
 typeof(NFL2009$HomeTeamScore)
 
 NFL2009$HomeTeamScore <- as.integer(NFL2009$HomeTeamScore)
@@ -147,7 +153,20 @@ NFL2009 <- mutate(NFL2009, AwayRushAttemptCount = ifelse(posteam == AwayTeam & R
 
 NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(HomeRushAttempts = sum(HomeRushAttemptCount, na.rm = T))
 
-NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(AwayRushAttempts = sum(AwayRushAttemptCount, na.rm=T))                         
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(AwayRushAttempts = sum(AwayRushAttemptCount, na.rm=T))
+                         
+                         
+#Add Possession Time
+
+NFL2009$PlayTimeDiff <- as.integer(NFL2009$PlayTimeDiff)
+
+NFL2009 <- mutate(NFL2009, HomePossessionTime = ifelse(posteam == HomeTeam, PlayTimeDiff,0))
+
+NFL2009 <- mutate(NFL2009, AwayPossessionTime = ifelse(posteam == AwayTeam, PlayTimeDiff,0))
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(HomePossession = sum(HomePossessionTime))
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(AwayPossession = sum(AwayPossessionTime))                         
 
 #Test Code
 getmode <- function(v) {
@@ -159,7 +178,8 @@ getmode <- function(v) {
 Passing <- group_by(NFL2009, GameID) %>% 
   summarise(HomeAttempts = max(HomePassAttempts), AwayAttempts = max(AwayPassAttempts), HomePassTotal = 
               max(HomePasses), AwayPassTotal = max(AwayPasses), Home = getmode(HomeTeam), Away = getmode(AwayTeam),
-              HomeFirsts = max(HomeFirstDowns), AwayFirsts = max(AwayFirstDowns), GameDate = getmode(Date))                         
+              HomeFirsts = max(HomeFirstDowns), AwayFirsts = max(AwayFirstDowns), GameDate = getmode(Date),
+              HomeTime = max(HomePossession), AwayTime = max(AwayPossession))                    
 
 NFL_Game <- group_by(NFL2009, GameID) %>% 
   summarise( GameDate = getmode(Date), Home = getmode(HomeTeam), Away = getmode(AwayTeam), HomePlays = max(HomePlays), 
