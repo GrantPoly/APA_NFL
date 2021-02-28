@@ -168,6 +168,18 @@ NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(HomePossession = sum(HomePos
 
 NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(AwayPossession = sum(AwayPossessionTime, na.rm = T))                         
 
+#Add Turnovers
+
+NFL2009$InterceptionThrown <- as.integer(NFL2009$InterceptionThrown)
+
+NFL2009 <- mutate(NFL2009, HomeTurnoverCount = ifelse(posteam == HomeTeam & (InterceptionThrown == 1 | !is.na(RecFumbTeam)), 1,0))
+
+NFL2009 <- mutate(NFL2009, AwayTurnoverCount = ifelse(posteam == AwayTeam & (InterceptionThrown == 1 | !is.na(RecFumbTeam)), 1,0))
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(HomeTurnovers = sum(HomeTurnoverCount))
+
+NFL2009 <- NFL2009 %>% group_by(GameID)  %>% mutate(AwayTurnovers = sum(AwayTurnoverCount))                         
+                         
 #Test Code
 getmode <- function(v) {
   uniqv <- unique(v)
