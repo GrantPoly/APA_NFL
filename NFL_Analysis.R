@@ -191,7 +191,8 @@ Passing <- group_by(NFL2009, GameID) %>%
   summarise(HomeAttempts = max(HomePassAttempts), AwayAttempts = max(AwayPassAttempts), HomePassTotal = 
               max(HomePasses), AwayPassTotal = max(AwayPasses), Home = getmode(HomeTeam), Away = getmode(AwayTeam),
               HomeFirsts = max(HomeFirstDowns), AwayFirsts = max(AwayFirstDowns), GameDate = getmode(Date),
-              HomeTime = max(HomePossession), AwayTime = max(AwayPossession))                    
+              HomeTime = max(HomePossession), AwayTime = max(AwayPossession), Hometurns = max(HomeTurnovers),
+              Awayturns = max(AwayTurnovers))                  
 
 NFL_Game <- group_by(NFL2009, GameID) %>% 
   summarise( GameDate = getmode(Date), Home = getmode(HomeTeam), Away = getmode(AwayTeam), HomePlays = max(HomePlays), 
