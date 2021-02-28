@@ -48,4 +48,41 @@ summary(NFL)
 
 
 count(NFL$HomeWin)
+                         
+```{r}
+hist(NFL_Game$HomeScore)
+table(NFL_Game$HomeScore)
+prop.table(table(NFL_Game$HomeScore))
+#Probability of a HomeWin
+mean(NFL_Game$HomeWin)
+
+out1 = glm(HomeWin~AwayYards,data =NFL_Game, family="binomial")
+summary(out1)
+
+```
+```{r}
+out2 = glm(HomeWin~HomePlays+AwayPlays+HomeFirsts+AwayFirsts+HomeDrives+AwayDrives+HomeScore+AwayScore+HomeYards+AwayYards, data = NFL_Game)
+summary(out2)
+
+```
+```{r}
+library(GGally)
+library(lmtest)
+out3 = glm(HomeWin~YardsPlayHome+YardsPlayAway+AwayPassTotal+AwayPassPercent+AwayPlays, data = NFL_Game, family="binomial")
+plot(out3)
+summary(out3)
+
+
+```
+```{r}
+out4=glm(HomeWin~HomePlays+AwayPlays+HomeFirsts+AwayFirsts+Overtime+HomeDrives+AwayDrives+HomeScore+AwayScore+HomePass+AwayPass+HomePassAttempts+AwayPassAttempts+HomeRush+AwayRush+HomeRushAttempts+AwayPassAttempts+HomePossession+AwayPossession+HomePassPercent+AwayPassPercent+HomeYardsPerPass+AwayYardsPerPass+HomeYardsPerRush+AwayYardsPerRush+YardsPlayHome+YardsPlayAway, data= NFL_Game, family="binomial")
+out4
+```
+
+```{r}
+out5=glm(HomeWin~AwayPlays+AwayFirsts+HomeDrives+AwayDrives+HomeScore+AwayScore+HomePass+AwayPass+HomePassAttempts+AwayPassAttempts+HomeRush+AwayRush+HomeRushAttempts+AwayPassAttempts+HomePossession+AwayPossession+HomePassPercent+AwayPassPercent+HomeYardsPerPass+AwayYardsPerPass+HomeYardsPerRush+AwayYardsPerRush+YardsPlayHome+YardsPlayAway, data= NFL_Game, family="binomial")
+out5
+```
+predic
+
 
