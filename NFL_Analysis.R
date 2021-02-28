@@ -203,7 +203,8 @@ NFL_Game <- group_by(NFL2009, GameID) %>%
              AwayPassTotal = max(AwayPasses),HomePassAttempts = max(HomePassAttempts), AwayPassAttempts = max(AwayPassAttempts),
              HomeRush = max(HomeRush), AwayRush = max(AwayRush), HomeRushAttempts = max(HomeRushAttempts),
              AwayRushAttempts = max(AwayRushAttempts), HomeYards = max(HomeYards), AwayYards = max(AwayYards),
-             HomePossession = (max(HomePossession)/60), AwayPossession = (max(AwayPossession)/60)
+             HomePossession = (max(HomePossession)/60), AwayPossession = (max(AwayPossession)/60),
+             HomeTurnovers = max(HomeTurnovers), AwayTurnovers = max(AwayTurnovers)
             )       
 
 NFL_Game <- mutate(NFL_Game, HomePassPercent = (HomePassTotal/HomePassAttempts)*100, AwayPassPercent 
