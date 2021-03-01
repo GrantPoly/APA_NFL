@@ -27,6 +27,7 @@ NFL <- read.csv("NFL Play by Play 2009-2016 (v3).csv", fileEncoding = "UTF-8-BOM
 missing_values <- sapply(NFL, function(x) sum(is.na(x)))
 missing_values
 ```
+##NFL Analysis 
 
 ```{r,echo=FALSE}
 #Changing variable types
@@ -142,6 +143,8 @@ NFL <- mutate(NFL, AwayTurnoverCount = ifelse(posteam == AwayTeam & (Interceptio
 NFL <- NFL %>% group_by(GameID)  %>% mutate(HomeTurnovers = sum(HomeTurnoverCount))
 NFL <- NFL %>% group_by(GameID)  %>% mutate(AwayTurnovers = sum(AwayTurnoverCount))    
 ```
+## Data Cleansing
+
 
 ```{r,echo=FALSE}
 #Test Code
@@ -186,6 +189,8 @@ NFL_Game <- mutate(NFL_Game, HomePassPercent = (HomePassTotal/HomePassAttempts)*
                    YardsPlayAway = AwayYards/AwayPlays)   
 ```
 
+## Selecting Relevant Factors
+
 ```{r,echo=FALSE}
 #Relocate HomeWin variable to last column
 NFL_Game <- relocate(NFL_Game, HomeWin, .after = last_col())
@@ -217,6 +222,7 @@ out3$coefficients
 
 predict(out3, NFL_Game2[1:10,], type="response")
 ```
+## Selecting the Best Model
 
 ```{r,echo=FALSE}
 #Using step wise selection algorithm to find significant variables for the model
@@ -236,6 +242,7 @@ out4$coefficients
 #Predicting winning for home teams to test the model 
 predict(out4, NFL_Game[1:10,], type="response")
 ```
+## Graphs
 
 ```{r plot2,fig.show="hold", out.width= "50%"}
 #Scatter plot YardsPalyAway vs YardsPlayHome
