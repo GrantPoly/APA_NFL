@@ -190,21 +190,64 @@ NFL_Game <- mutate(NFL_Game, HomePassPercent = (HomePassTotal/HomePassAttempts)*
 #Relocate HomeWin variable to last column
 NFL_Game <- relocate(NFL_Game, HomeWin, .after = last_col())
 ```
-
-```{r,echo=FALSE}
+```{r,echo=FALSE,message=FALSE}
 #Logistical Regression model
-out=glm(HomeWin~HomePass+AwayPass+Overtime+HomeRush+AwayRush+HomePossession+AwayPossession+HomeTurnovers+AwayTurnovers+
-           YardsPlayHome+YardsPlayAway, family = "binomial", maxit = 100, data=NFL_Game)
-summary(out)
+out1=glm(HomeWin~., family = binomial(link='logit'), maxit = 100, data=NFL_Game[c(5:38)])
+summary(out1)
 ```
 
 ```{r,echo=FALSE}
-#Predict winning team
-predict(out, NFL_Game[1:10,5:38], type="response")
+#Logistical Regression removing Home and Away Yards variables
+NFL_Game1 <- NFL_Game[c(-24, -25)]
+
+out2=glm(HomeWin~., family = binomial(link='logit'), maxit = 100, data=NFL_Game1[c(5:36)])
+summary(out2)
+out2$coefficients
+
+predict(out2, NFL_Game1[1:10,5:36], type="response")
 ```
 
 ```{r,echo=FALSE}
+#Removing scores to avoid over fitting
+NFL_Game2 <- NFL_Game1[c(-12, -13)]
+
+out3=glm(HomeWin~., family = binomial(link='logit'), maxit = 100, data=NFL_Game2[c(5:34)])
+summary(out3)
+out3$coefficients
+
+predict(out3, NFL_Game2[1:10,], type="response")
 ```
 
 ```{r,echo=FALSE}
+#Using step wise selection algorithm to find significant variables for the model
+step.model <- out3 %>% stepAIC(trace = FALSE)
+coef(step.model)
 ```
+
+```{r,echo=FALSE}
+#Final logistic regression 
+out4 <- glm(HomeWin~ HomePlays + AwayPlays + AwayFirsts + Overtime + HomeDrives + HomePassTotal 
+            +HomePassAttempts + AwayPassAttempts + HomeTurnovers + AwayTurnovers + AwayPassPercent
+            + HomeYardsPerRush + AwayYardsPerRush + YardsPlayHome + YardsPlayAway, 
+            family = binomial(link='logit'), maxit = 100, data=NFL_Game)
+summary(out4)
+out4$coefficients
+
+#Predicting winning for home teams to test the model 
+predict(out4, NFL_Game[1:10,], type="response")
+```
+
+```{r plot2,fig.show="hold", out.width= "50%"}
+#Scatter plot YardsPalyAway vs YardsPlayHome
+ggplot(data = NFL_Game) + 
+  geom_point(mapping = aes(x = YardsPlayHome, y = YardsPlayAway, color = HomeWin)) +
+  scale_color_gradient(low="blue", high="red")
+```
+
+```{r plot2,fig.show="hold", out.width= "50%"}
+#Scatter Plot with Jitter() TurnOvers vs HomeWin
+ggplot(data = NFL_Game) + 
+  geom_point(mapping = aes(HomeTurnovers, AwayTurnovers, color = HomeWin), position = position_jitter()) +
+  scale_color_gradient(low="blue", high="red")
+```
+
