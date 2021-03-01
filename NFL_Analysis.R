@@ -213,11 +213,34 @@ NFL_Game <- mutate(NFL_Game, HomePassPercent = (HomePassTotal/HomePassAttempts)*
 
 NFL_Game <- relocate(NFL_Game, HomeWin, .after = last_col())
 
-out4=glm(HomeWin~., family = binomial(link='logit'), maxit = 100, data=NFL_Game[c(5:38)])
+out1=glm(HomeWin~., family = binomial(link='logit'), maxit = 100, data=NFL_Game[c(5:38)])
+summary(out1)
+
+NFL_Game1 <- NFL_Game[c(-24, -25)]
+
+out2=glm(HomeWin~., family = binomial(link='logit'), maxit = 100, data=NFL_Game1[c(5:36)])
+summary(out2)
+out2$coefficients
+
+predict(out2, NFL_Game1[1:10,5:36], type="response")
+
+NFL_Game2 <- NFL_Game1[c(-12, -13)]
+
+out3=glm(HomeWin~., family = binomial(link='logit'), maxit = 100, data=NFL_Game2[c(5:34)])
+summary(out3)
+out3$coefficients
+
+predict(out3, NFL_Game2[1:10,], type="response")
+
+step.model <- out3 %>% stepAIC(trace = FALSE)
+coef(step.model)
+
+out4 <- glm(HomeWin~ HomePlays + AwayPlays + AwayFirsts + Overtime + HomeDrives + HomePassTotal 
+            +HomePassAttempts + AwayPassAttempts + HomeTurnovers + AwayTurnovers + AwayPassPercent
+            + HomeYardsPerRush + AwayYardsPerRush + YardsPlayHome + YardsPlayAway, 
+            family = binomial(link='logit'), maxit = 100, data=NFL_Game)
+summary(out4)
 out4$coefficients
 
-out5=glm(HomeWin~HomePass+AwayPass+Overtime+HomeRush+AwayRush+HomePossession+AwayPossession+HomeTurnovers+AwayTurnovers+
-           YardsPlayHome+YardsPlayAway, family = binomial(link='logit'), maxit = 100, data=NFL_Game)
-summary(out5)
+predict(out4, NFL_Game[1:10,], type="response")
 
-predict(out5, NFL_Game[1:10,5:38], type="response")
