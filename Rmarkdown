@@ -1,9 +1,15 @@
 ---
 title: "HW2 Dream Job"
-author: "Logan Judkins 45847663, Diego Padilla 48392335, Grant Polychronis 46408457, Aparna Subramanian 47038073"
+author: Logan Judkins 45847663, Diego Padilla 48392335, Grant Polychronis 46408457,
+  Aparna Subramanian 47038073
 date: "2/28/2021"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 ---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, results = "hide")
+```
 
 ```{r,echo=FALSE,warning=FALSE,message=FALSE}
 library(tidyverse)
@@ -13,7 +19,7 @@ library(GGally)
 
 ```{r,echo=FALSE}
 #set working directory
-setwd("C:/Users/diego/OneDrive/Desktop/MAST 6251/Applied Predictive Analytics")
+setwd("~/Desktop/Applied Predictive Analytics")
 ```
 
 ```{r,echo=FALSE}
@@ -28,9 +34,7 @@ missing_values <- sapply(NFL, function(x) sum(is.na(x)))
 missing_values
 ```
 
-##NFL Analysis 
- 
-
+## NFL Analysis 
 Tasked with determining whether an NFL team won or lost based on the stats of both teams, our group worked with data from 2009 to 2017 that contained everything from accurate descriptions of each play to the time of possession for each team. Through dissection and creating new variables, we were able to make the data into a usable form that could be then used to create a model and calculate which variables had the greatest effect on whether a team lost or won a game. With a dataset this large, we worked with a subset to create the model that was then pushed into the entire dataset.  
 
 ```{r,echo=FALSE}
@@ -201,13 +205,14 @@ NFL_Game <- mutate(NFL_Game, HomePassPercent = (HomePassTotal/HomePassAttempts)*
 #Relocate HomeWin variable to last column
 NFL_Game <- relocate(NFL_Game, HomeWin, .after = last_col())
 ```
-```{r,echo=FALSE,message=FALSE}
+
+```{r,echo=FALSE,message=FALSE,warning=FALSE}
 #Logistical Regression model
 out1=glm(HomeWin~., family = binomial(link='logit'), maxit = 100, data=NFL_Game[c(5:38)])
 summary(out1)
 ```
 
-```{r,echo=FALSE}
+```{r,echo=FALSE,warning=FALSE}
 #Logistical Regression removing Home and Away Yards variables
 NFL_Game1 <- NFL_Game[c(-24, -25)]
 
@@ -218,7 +223,7 @@ out2$coefficients
 predict(out2, NFL_Game1[1:10,5:36], type="response")
 ```
 
-```{r,echo=FALSE}
+```{r,echo=FALSE, warning=FALSE}
 #Removing scores to avoid over fitting
 NFL_Game2 <- NFL_Game1[c(-12, -13)]
 
@@ -234,25 +239,42 @@ After scaling down our data, we worked with about 28(33 in the original regressi
 
 1) Home Plays  
 
-2) Away Firsts 
+2) Away Plays
 
-3) Home Pass Total  
+3) Away First Downs 
 
-4) Away Pass Attempts 
+4) Over Time
 
-5) Away Turnovers 
+5) Home Team Drives
 
-6) Away Yards per Rush  
+6) Home Pass Complete  
 
-7) Yards Play Home  
+7) Home Pass Attempts 
+
+8) Away Pass Attempts 
+
+9) Home Turnovers 
+
+10) Away Turnovers 
+
+11) Away Pass Complete Percentage
+
+12) Home Yards per Rush 
+
+13) Away Yards per Rush  
+
+14) Yards per Play Home  
+
+15) Yards per Play Away
 
 ```{r,echo=FALSE}
 #Using step wise selection algorithm to find significant variables for the model
 #step.model <- out3 %>% stepAIC(trace = FALSE)
 #coef(step.model)
+#commented out because R threw an error when knitting
 ```
 
-```{r,echo=FALSE}
+```{r,echo=FALSE, warning=FALSE}
 #Final logistic regression 
 out4 <- glm(HomeWin~ HomePlays + AwayPlays + AwayFirsts + Overtime + HomeDrives + HomePassTotal 
             +HomePassAttempts + AwayPassAttempts + HomeTurnovers + AwayTurnovers + AwayPassPercent
@@ -266,14 +288,14 @@ predict(out4, NFL_Game[1:10,], type="response")
 ```
 ## Graphs
 
-```{r plot1,fig.show="hold", out.width= "50%"}
+```{r plot1,fig.show="hold", out.width= "50%", echo=FALSE}
 #Scatter plot YardsPalyAway vs YardsPlayHome
 ggplot(data = NFL_Game) + 
   geom_point(mapping = aes(x = YardsPlayHome, y = YardsPlayAway, color = HomeWin)) +
   scale_color_gradient(low="blue", high="red")
 ```
 
-```{r plot2,fig.show="hold", out.width= "50%"}
+```{r plot2,fig.show="hold", out.width= "50%", echo=FALSE}
 #Scatter Plot with Jitter() TurnOvers vs HomeWin
 ggplot(data = NFL_Game) + 
   geom_point(mapping = aes(HomeTurnovers, AwayTurnovers, color = HomeWin), position = position_jitter()) +
@@ -283,7 +305,14 @@ ggplot(data = NFL_Game) +
 ## Findings and Recommendations
 It was discovered that Home Pass total, Away pass attempts, Away turn overs and Yards play home influence if the home team will win. The higher the passing yards of the home team the greater the probability they have to win the game. Also, the more yards the home team play the better chances they have of securing a win.  
 
+Therefore, we suggest the following recommendations: 
+
+1) Teams need to invest heavily in promising quarterbacks to increase the passing total. By increasing  scouting across college campuses, the team can find elite players that might fall in the draft.  
+
+2) Teams also need to place a heavy emphasis on the defense as well.  By limiting the opposing team's average yards per play, the defense can force a turnover on downs and inhibit the offense from getting a first down. As the saying goes, "the best offense is always a good defense," our data shows that the longer a team can have possession, the less time the opposing team has to initiate their offense. 
+
+3) As the saying goes, “the best offense is a good defense,” our data shows that the longer a team can have possession, the less time the opposing team has to initiate their own offense. By increasing the yards per play for the home team, there is a higher likelihood that they will win the game. For example, if the home team was to average five yards a play for the entirety of the game, that would mean that the team only needs two downs to get a first down.  
+
+4) The turnover battle between each team is vital to the success of the winning team. By eliminating their own turnovers and getting turnovers from the opposing team, the probability of winning the game increases drastically. This makes sense, as the team with the most turnovers did not have the ability to score on many of the drives they had during the game. 
+
  
-Therefore, it is recommended that these teams invest heavily on promising quarterbacks that can provide an increase of passing total. By increasing scouting across college campuses, the team can look to find elite players that might fall in the draft. Along with maintaining a good offense, placing a heavy emphasis on the defense as well.  By limiting the opposing team’s average yards per play, the defense can force turnover on downs and inhibit the offense from getting a first down. As the saying goes, “the best offense is always a good defense,” our data shows that the longer a team can have possession, the less time the opposing team has to initiate their own offense. 
-
-
