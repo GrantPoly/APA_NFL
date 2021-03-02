@@ -27,7 +27,11 @@ NFL <- read.csv("NFL Play by Play 2009-2016 (v3).csv", fileEncoding = "UTF-8-BOM
 missing_values <- sapply(NFL, function(x) sum(is.na(x)))
 missing_values
 ```
+
 ##NFL Analysis 
+ 
+
+Tasked with determining whether an NFL team won or lost based on the stats of both teams, our group worked with data from 2009 to 2017 that contained everything from accurate descriptions of each play to the time of possession for each team. Through dissection and creating new variables, we were able to make the data into a usable form that could be then used to create a model and calculate which variables had the greatest effect on whether a team lost or won a game. With a dataset this large, we worked with a subset to create the model that was then pushed into the entire dataset.  
 
 ```{r,echo=FALSE}
 #Changing variable types
@@ -145,6 +149,10 @@ NFL <- NFL %>% group_by(GameID)  %>% mutate(AwayTurnovers = sum(AwayTurnoverCoun
 ```
 ## Data Cleansing
 
+The process of data cleansing began with looking over each variable and deciding which variables could be deleted to make the data more manageable. The data was not deleted because it was bad data, but rather that it was not helpful in creating a model to calculate winning and losing. Some factors that we looked at that could indirectly affect the results of our data included the team roster make-up, what season it was, the weather for the game, momentum, and the coaching staff on each team. These factors, although not necessarily accounted for in our data, can make a large difference on the performance of a team. One factor that was very significant to our model was the average yards per play over the course of the game. While weather was definitely integrated into all of our data as a whole, there was no weather variable for us to use to see how rain affected gameplay versus a game being played outside with good temperatures or in a domed stadium. Factors as the coaching staff and roster make-up can be looked as variables that are unmeasurable when creating a model, but have significant impact on how a team plays and adapts during the course of the game. 
+
+
+
 
 ```{r,echo=FALSE}
 #Test Code
@@ -189,8 +197,6 @@ NFL_Game <- mutate(NFL_Game, HomePassPercent = (HomePassTotal/HomePassAttempts)*
                    YardsPlayAway = AwayYards/AwayPlays)   
 ```
 
-## Selecting Relevant Factors
-
 ```{r,echo=FALSE}
 #Relocate HomeWin variable to last column
 NFL_Game <- relocate(NFL_Game, HomeWin, .after = last_col())
@@ -224,10 +230,26 @@ predict(out3, NFL_Game2[1:10,], type="response")
 ```
 ## Selecting the Best Model
 
+After scaling down our data, we worked with about 28(33 in the original regression) variables(selected down to 15 by the selection algorithm) that gave provided the best model to predict a win for the Home team. The variables that most directly affected the outcome of the game included: 
+
+1) Home Plays  
+
+2) Away Firsts 
+
+3) Home Pass Total  
+
+4) Away Pass Attempts 
+
+5) Away Turnovers 
+
+6) Away Yards per Rush  
+
+7) Yards Play Home  
+
 ```{r,echo=FALSE}
 #Using step wise selection algorithm to find significant variables for the model
-step.model <- out3 %>% stepAIC(trace = FALSE)
-coef(step.model)
+#step.model <- out3 %>% stepAIC(trace = FALSE)
+#coef(step.model)
 ```
 
 ```{r,echo=FALSE}
@@ -244,7 +266,7 @@ predict(out4, NFL_Game[1:10,], type="response")
 ```
 ## Graphs
 
-```{r plot2,fig.show="hold", out.width= "50%"}
+```{r plot1,fig.show="hold", out.width= "50%"}
 #Scatter plot YardsPalyAway vs YardsPlayHome
 ggplot(data = NFL_Game) + 
   geom_point(mapping = aes(x = YardsPlayHome, y = YardsPlayAway, color = HomeWin)) +
@@ -257,4 +279,11 @@ ggplot(data = NFL_Game) +
   geom_point(mapping = aes(HomeTurnovers, AwayTurnovers, color = HomeWin), position = position_jitter()) +
   scale_color_gradient(low="blue", high="red")
 ```
+
+## Findings and Recommendations
+It was discovered that Home Pass total, Away pass attempts, Away turn overs and Yards play home influence if the home team will win. The higher the passing yards of the home team the greater the probability they have to win the game. Also, the more yards the home team play the better chances they have of securing a win.  
+
+ 
+Therefore, it is recommended that these teams invest heavily on promising quarterbacks that can provide an increase of passing total. By increasing scouting across college campuses, the team can look to find elite players that might fall in the draft. Along with maintaining a good offense, placing a heavy emphasis on the defense as well.  By limiting the opposing team’s average yards per play, the defense can force turnover on downs and inhibit the offense from getting a first down. As the saying goes, “the best offense is always a good defense,” our data shows that the longer a team can have possession, the less time the opposing team has to initiate their own offense. 
+
 
